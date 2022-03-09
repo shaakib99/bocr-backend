@@ -15,7 +15,6 @@ import base64
 
 @api_view(["GET", "PUT"])
 @responsify
-@jwtAuthGuard
 def recognition(request: Request):
     if request.method.lower() == 'put':
         finalResult = []
