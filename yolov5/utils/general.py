@@ -367,9 +367,10 @@ def check_file(file, suffix=''):
         url = file
         file = Path(urllib.parse.unquote(file).split('?')[0]).name  # '%2F' to '/', split https://url.com/file.txt?auth
         if Path(file).is_file():
-            LOGGER.info(f'Found {url} locally at {file}')  # file already exists
+            pass
+            # LOGGER.info(f'Found {url} locally at {file}')  # file already exists
         else:
-            LOGGER.info(f'Downloading {url} to {file}...')
+            # LOGGER.info(f'Downloading {url} to {file}...')
             torch.hub.download_url_to_file(url, file)
             assert Path(file).exists() and Path(file).stat().st_size > 0, f'File download failed: {url}'  # check
         return file

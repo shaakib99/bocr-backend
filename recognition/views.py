@@ -8,13 +8,14 @@ from .models import Recognition as RecognitionModel
 from .serializers.recognitionSerializer import RecognizerSerializer
 from rest_framework.status import HTTP_503_SERVICE_UNAVAILABLE
 from rest_framework.exceptions import NotFound
-from common.decorators import responsify
+from common.decorators import responsify, jwtAuthGuard
 import requests
 import base64
 
 
 @api_view(["GET", "PUT"])
 @responsify
+@jwtAuthGuard
 def recognition(request: Request):
     if request.method.lower() == 'put':
         finalResult = []

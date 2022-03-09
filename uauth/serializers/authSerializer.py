@@ -39,7 +39,7 @@ class AuthSerializer(serializers.Serializer):
         self.isDeleted = False
 
         user = User(**self.to_representation(self))
-        return user.save()
+        # return user.save()
 
     def login(self):
         email = self.initial_data['email']

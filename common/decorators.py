@@ -1,5 +1,8 @@
+from urllib.request import Request
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from helper.util import jwtDecode
+from rest_framework.exceptions import NotAuthenticated
 
 
 def responsify(func):
@@ -9,12 +12,13 @@ def responsify(func):
             data = func(*args)
             status_code = HTTP_200_OK
 
-            if 'status_code' in data:
+            if data and 'status_code' in data:
                 status_code = data['status_code']
                 del data['status_code']
             return Response(data=data, status=status_code)
 
         except Exception as e:
+            print(e)
             status_code = HTTP_400_BAD_REQUEST
             detail = 'undefined'
             if hasattr(e, 'status_code'):
@@ -23,5 +27,22 @@ def responsify(func):
                 detail = e.detail
 
             return Response(data=detail, status=status_code)
+
+    return __inner
+
+
+def jwtAuthGuard(func):
+
+    def __inner(*args):
+        request: Request = args[0]
+        if 'Authorization' in request.headers:
+            token = request.headers['Authorization']
+            try:
+                user = jwtDecode(token)
+                if not user:
+                    raise NotAuthenticated('User is not authenticated')
+                return func(*args, user)
+            except:
+                raise NotAuthenticated('User is not authenticated')
 
     return __inner

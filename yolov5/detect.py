@@ -43,8 +43,8 @@ from utils.general import (LOGGER, check_file, check_img_size,
                            check_requirements, non_max_suppression, print_args,
                            scale_coords, strip_optimizer, xyxy2xywh)
 from utils.torch_utils import select_device, time_sync
- 
-  
+
+
 @torch.no_grad()
 def run(
         source,
@@ -79,7 +79,6 @@ def run(
     source = str(source)
     is_url = source.lower().startswith(
         ('rtsp://', 'rtmp://', 'http://', 'https://'))
-    print('url', is_url)
     if is_url:
         source = check_file(source)  # download
 
@@ -165,4 +164,5 @@ def run(
 
     if update:
         strip_optimizer(weights)  # update model (to fix SourceChangeWarning)
+    os.remove(source)
     return result
