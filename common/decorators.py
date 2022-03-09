@@ -18,7 +18,6 @@ def responsify(func):
             return Response(data=data, status=status_code)
 
         except Exception as e:
-            print(e)
             status_code = HTTP_400_BAD_REQUEST
             detail = 'undefined'
             if hasattr(e, 'status_code'):
