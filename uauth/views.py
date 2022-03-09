@@ -3,9 +3,11 @@ from rest_framework.decorators import api_view
 
 from uauth.serializers.requestSerializers import RegisterSerializer, LoginSerializer, UpdateSerializer, GenerateNewVerificationTokenSerializer, GenerateNewPasswordResetTokenSerializer, ResetPasswordSerializer, VerifyAccountSerializer
 from uauth.serializers.authSerializer import AuthSerializer
+from common.decorators import responsify
 
 
 @api_view(['POST'])
+@responsify
 def register(request: Request):
     serilizer = RegisterSerializer(data=request.data)
     serilizer.is_valid(raise_exception=True)
@@ -15,6 +17,7 @@ def register(request: Request):
 
 
 @api_view(['POST'])
+@responsify
 def login(request: Request):
     serilizer = LoginSerializer(data=request.data)
     serilizer.is_valid(raise_exception=True)
@@ -23,6 +26,7 @@ def login(request: Request):
 
 
 @api_view(['PATCH'])
+@responsify
 def update(request: Request):
     serilizer = UpdateSerializer(data=request.data)
     serilizer.is_valid(raise_exception=True)
@@ -32,6 +36,7 @@ def update(request: Request):
 
 
 @api_view(['GET'])
+@responsify
 def generateNewVerificationToken(request: Request):
     serilizer = GenerateNewVerificationTokenSerializer(data=request.data)
     serilizer.is_valid(raise_exception=True)
@@ -41,6 +46,7 @@ def generateNewVerificationToken(request: Request):
 
 
 @api_view(['GET'])
+@responsify
 def generateNewPasswordResetToken(request: Request):
     serilizer = GenerateNewPasswordResetTokenSerializer(data=request.data)
     serilizer.is_valid(raise_exception=True)
@@ -50,6 +56,7 @@ def generateNewPasswordResetToken(request: Request):
 
 
 @api_view(['POST'])
+@responsify
 def resetPassword(request: Request):
     serilizer = ResetPasswordSerializer(data=request.data)
     serilizer.is_valid(raise_exception=True)
@@ -59,6 +66,7 @@ def resetPassword(request: Request):
 
 
 @api_view(['GET'])
+@responsify
 def verifyAccount(request: Request):
     serilizer = VerifyAccountSerializer(data=request.data)
     serilizer.is_valid(raise_exception=True)

@@ -8,11 +8,13 @@ from .models import Recognition as RecognitionModel
 from .serializers.recognitionSerializer import RecognizerSerializer
 from rest_framework.status import HTTP_503_SERVICE_UNAVAILABLE
 from rest_framework.exceptions import NotFound
+from common.decorators import responsify
 import requests
 import base64
 
 
 @api_view(["GET", "PUT"])
+@responsify
 def recognition(request: Request):
     if request.method.lower() == 'put':
         finalResult = []
