@@ -35,7 +35,7 @@ class RecognizerSerializer(serializers.Serializer):
         mappedResult = self.__mapResult(classifiedResult)
 
         word = self.__constructWord(mappedResult)
-        result = {"result": word, "map": classifiedResult}
+        result = {"output": word, "map": classifiedResult}
 
         return RecognitionSerializer({
             "uri": self.uri,

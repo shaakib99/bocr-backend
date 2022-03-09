@@ -1,10 +1,12 @@
+from datetime import datetime
 import json
 from urllib.request import Request
 from rest_framework.decorators import api_view
 from bocr.settings import IMG_BB_URL, IMGBB_API_KEY
 from django.core.files.uploadedfile import InMemoryUploadedFile
-from .models import Recognition
+from .models import Recognition as RecognitionModel
 from .serializers.recognitionSerializer import RecognizerSerializer
+from rest_framework.status import HTTP_503_SERVICE_UNAVAILABLE
 from rest_framework.exceptions import NotFound
 import requests
 import base64
@@ -13,7 +15,7 @@ import base64
 @api_view(["GET", "PUT"])
 def recognition(request: Request):
     if request.method.lower() == 'put':
-        result = []
+        finalResult = []
         images: list[InMemoryUploadedFile] = request.FILES.getlist('images')
         for img in images:
             data = {
@@ -29,17 +31,28 @@ def recognition(request: Request):
                         'success'] == True:
                 url = response['data']['image']['url']
 
-                result.append(
-                    RecognizerSerializer(data={
-                        "uri": url
-                    }).getResult())
+                result = RecognizerSerializer(data={"uri": url}).getResult()
+                result['cAt'] = datetime.now().timestamp()
 
-        return result
+                recognitionModel = RecognitionModel(**result)
+                recognitionModel.save()
+
+                finalResult.append(result)
+            else:
+                return {
+                    "status_code": HTTP_503_SERVICE_UNAVAILABLE,
+                    "message": response['message']
+                }
+        return finalResult
 
     else:
         id = request.GET['id']
-        recognition: Recognition = Recognition.objects.filter(id=id).first()
+        recognition: RecognitionModel = RecognitionModel.objects.filter(
+            id=id).first()
 
         if not recognition:
             raise NotFound('Image not found')
-        return RecognizerSerializer(data={"uri": url}).getResult()
+        result = RecognizerSerializer(data={"uri": url}).getResult()
+        result = RecognitionModel.objects.filter(id=id).update(
+            **result).__dict__()
+        return result
