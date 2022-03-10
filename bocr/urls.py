@@ -20,6 +20,7 @@ from bocr.settings import API_VER
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
-    path(f'api/{API_VER}/user/', include('uauth.urls')),
-    path(f'api/{API_VER}/image/', include('recognition.urls'))
+    path(f'api/{API_VER}/auth/', include('uauth.urls')),
+    path(f'api/{API_VER}/image/', include('recognition.urls')),
+    path(f'api/{API_VER}/user/', include('userUpload.urls'))
 ]

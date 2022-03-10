@@ -38,8 +38,8 @@ class AuthSerializer(serializers.Serializer):
         self.uAt = self.cAt
         self.isDeleted = False
 
-        user = User(**self.to_representation(self))
-        # return user.save()
+        user = User.objects.create(**self.to_representation(self))
+        return user.save()
 
     def login(self):
         email = self.initial_data['email']

@@ -45,3 +45,23 @@ def jwtAuthGuard(func):
                 raise NotAuthenticated('User is not authenticated')
 
     return __inner
+
+
+def jwtAuthGuardExcept(func):
+
+    def __inner(*args):
+        print('hello')
+        request: Request = args[0]
+        if 'Authorization' in request.headers:
+            token = request.headers['Authorization']
+            try:
+                user = jwtDecode(token)
+                if not user:
+                    raise NotAuthenticated('User is not authenticated')
+                return func(*args, user)
+            except:
+                raise NotAuthenticated('User is not authenticated')
+        else:
+            return func(*args)
+
+    return __inner

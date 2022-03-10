@@ -8,14 +8,16 @@ from .models import Recognition as RecognitionModel
 from .serializers.recognitionSerializer import RecognizerSerializer
 from rest_framework.status import HTTP_503_SERVICE_UNAVAILABLE
 from rest_framework.exceptions import NotFound
-from common.decorators import responsify, jwtAuthGuard
+from common.decorators import responsify, jwtAuthGuardExcept
+from userUpload.models import UserUpload as UserUploadModel
 import requests
 import base64
 
 
 @api_view(["GET", "PUT"])
 @responsify
-def recognition(request: Request):
+@jwtAuthGuardExcept
+def recognition(request: Request, user=None):
     if request.method.lower() == 'put':
         finalResult = []
         images: list[InMemoryUploadedFile] = request.FILES.getlist('images')
@@ -36,9 +38,17 @@ def recognition(request: Request):
                 result = RecognizerSerializer(data={"uri": url}).getResult()
                 result['cAt'] = datetime.now().timestamp()
 
-                recognitionModel = RecognitionModel(**result)
-                recognitionModel.save()
-
+                recognitionModel = RecognitionModel.objects.filter(uri=url)
+                if recognitionModel:
+                    recognitionModel.update(**result)
+                else:
+                    recognitionModel = RecognitionModel.objects.create(
+                        **result)
+                    recognitionModel.save()
+                if user:
+                    userUploadModel = UserUploadModel.objects.create(
+                        uid=user['id'], recid=recognitionModel.id)
+                    userUploadModel.save()
                 finalResult.append(result)
             else:
                 return {

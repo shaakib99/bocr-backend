@@ -1,7 +1,7 @@
 from datetime import datetime
 from rest_framework import serializers
-from yolov5.classes import CLASSES, TOP, LEFT, RIGHT, BOTTOM
-from yolov5.detect import run as classifier
+from recognition.yolov5.classes import CLASSES, TOP, LEFT, RIGHT, BOTTOM
+from recognition.yolov5.detect import run as classifier
 
 
 class RecognitionSerializer(serializers.Serializer):
