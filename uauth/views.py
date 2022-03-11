@@ -87,10 +87,10 @@ def resetPassword(request: Request):
     return auth.resetPassword()
 
 
-@extend_schema(request=VerifyAccountSerializer,
+@extend_schema(parameters=[VerifyAccountSerializer],
                responses={200: None},
                tags=['User'])
-@api_view(['POST'])
+@api_view(['GET'])
 @responsify
 def verifyAccount(request: Request):
     serilizer = VerifyAccountSerializer(data=request.data)

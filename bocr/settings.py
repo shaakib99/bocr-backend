@@ -142,7 +142,7 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'Bangla Optical Character Recogntion (BOCR)',
     'DESCRIPTION': 'BOCR is an optical recognition tool for Bangla language. It can detect up to 80 characters including diacritics and compound characters',
     'VERSION': API_VER,
-    'SCHEMA_PATH_PREFIX': f'api/{API_VER}',
+    'SCHEMA_PATH_PREFIX': f'/api/{API_VER}',
     # Remove matching SCHEMA_PATH_PREFIX from operation path. Usually used in
     # conjunction with appended prefixes in SERVERS.
     'SCHEMA_PATH_PREFIX_TRIM': True,
