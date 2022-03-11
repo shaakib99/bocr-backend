@@ -97,7 +97,7 @@ class AuthSerializer(serializers.Serializer):
         user.passwordResetTokenExpireAt = (datetime.now() +
                                            timedelta(minutes=30)).timestamp()
         user.save()
-        return UserResponseSerializer(user).data
+        return {}
 
     def resetPassword(self):
         self.passwordResetToken = self.initial_data['passwordResetToken']
@@ -113,10 +113,17 @@ class AuthSerializer(serializers.Serializer):
         if user.password == hashPassword(self.initial_data['password']):
             raise NotAcceptable("Old and new password can't be the same")
 
-        user.password = hashPassword(self.initial_data['password'])
+        newPassword = hashPassword(self.initial_data['password'])
+
+        if newPassword == user.password:
+            raise NotAcceptable(
+                'New password and old password can not be the same.')
+
+        user.password = newPassword
+
         user.passwordResetToken = None
         user.save()
-        return UserResponseSerializer(user).data
+        return {}
 
     def verifyAccount(self):
         self.verifyToken = self.initial_data['verifyToken']
@@ -131,4 +138,4 @@ class AuthSerializer(serializers.Serializer):
         user.isActive = True
         user.isVerified = True
         user.save()
-        return UserResponseSerializer(user).data
+        return {}

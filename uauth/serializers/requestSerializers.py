@@ -62,3 +62,5 @@ class VerifyAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['verifyToken']
+
+

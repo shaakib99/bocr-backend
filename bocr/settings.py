@@ -37,8 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'uauth',
     'recognition',
-    'userUpload',
+    'userUploads',
     'rest_framework',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -129,6 +130,21 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # APP CONSTANT
-API_VER = 1
+API_VER = '1'
 IMG_BB_URL = "https://api.imgbb.com/1/upload"
 IMGBB_API_KEY = "9a291a58edeba5a29937e429d5452d6e"
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Bangla Optical Character Recogntion (BOCR)',
+    'DESCRIPTION': 'BOCR is an optical recognition tool for Bangla language. It can detect up to 80 characters including diacritics and compound characters',
+    'VERSION': API_VER,
+    'SCHEMA_PATH_PREFIX': f'api/{API_VER}',
+    # Remove matching SCHEMA_PATH_PREFIX from operation path. Usually used in
+    # conjunction with appended prefixes in SERVERS.
+    'SCHEMA_PATH_PREFIX_TRIM': True,
+}
+

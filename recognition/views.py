@@ -5,15 +5,30 @@ from rest_framework.decorators import api_view
 from bocr.settings import IMG_BB_URL, IMGBB_API_KEY
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from .models import Recognition as RecognitionModel
-from .serializers.recognitionSerializer import RecognizerSerializer
+from .serializers.recognitionSerializer import RecognizerSerializer, RecognitionSerializer
 from rest_framework.status import HTTP_503_SERVICE_UNAVAILABLE
 from rest_framework.exceptions import NotFound
 from common.decorators import responsify, jwtAuthGuardExcept
-from userUpload.models import UserUpload as UserUploadModel
+from userUploads.models import UserUploads as UserUploadModel
+from drf_spectacular.utils import extend_schema
+from recognition.serializers.paramsSerializer import ParamsSerializer
+from common.requestSerializer import JWTAuthGuard
+from rest_framework import serializers
 import requests
 import base64
 
 
+@extend_schema(
+    parameters=[
+        JWTAuthGuard(required=False),
+    ],
+    methods=['PUT'],
+    responses={200: serializers.ListSerializer(child=RecognitionSerializer())},
+    tags=['Recognition'])
+@extend_schema(parameters=[ParamsSerializer],
+               methods=['GET'],
+               responses={200: RecognitionSerializer},
+               tags=['Recognition'])
 @api_view(["GET", "PUT"])
 @responsify
 @jwtAuthGuardExcept
@@ -45,10 +60,12 @@ def recognition(request: Request, user=None):
                     recognitionModel = RecognitionModel.objects.create(
                         **result)
                     recognitionModel.save()
+
                 if user:
                     userUploadModel = UserUploadModel.objects.create(
                         uid=user['id'], recid=recognitionModel.id)
                     userUploadModel.save()
+
                 finalResult.append(result)
             else:
                 return {

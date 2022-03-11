@@ -15,12 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-
 from bocr.settings import API_VER
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    # Optional UI:
+    path('api/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path(f'api/{API_VER}/auth/', include('uauth.urls')),
     path(f'api/{API_VER}/image/', include('recognition.urls')),
-    path(f'api/{API_VER}/user/', include('userUpload.urls'))
+    path(f'api/{API_VER}/user/', include('userUploads.urls'))
 ]

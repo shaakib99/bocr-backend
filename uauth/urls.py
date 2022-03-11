@@ -5,13 +5,12 @@ urlpatterns = [
     path('register', view=register, name='registration'),
     path('login', view=login, name='login'),
     path('update', view=update, name='update'),
-    path('generate-verification-token',
+    path('generate-verification-token/<str:verifyToken>',
          view=generateNewVerificationToken,
          name='generate-verification-token'),
-    path('verify-account/<str:token>',
-         view=verifyAccount,
-         name='verify-account'),
-    path('reset-password/<str:email>',
-         view=resetPassword,
-         name='forgot-password')
+    path('verify-account/', view=verifyAccount, name='verify-account'),
+    path('forgot-password/<str:email>',
+         view=generateNewPasswordResetToken,
+         name='forgot-password'),
+    path('reset-password/', view=resetPassword, name='reset-password')
 ]

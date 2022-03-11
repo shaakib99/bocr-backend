@@ -1,11 +1,17 @@
 from urllib.request import Request
 from rest_framework.decorators import api_view
+from drf_spectacular.utils import extend_schema
 
 from uauth.serializers.requestSerializers import RegisterSerializer, LoginSerializer, UpdateSerializer, GenerateNewVerificationTokenSerializer, GenerateNewPasswordResetTokenSerializer, ResetPasswordSerializer, VerifyAccountSerializer
+from uauth.serializers.responseSerializers import LoginResponseSerializer, UserResponseSerializer
 from uauth.serializers.authSerializer import AuthSerializer
 from common.decorators import responsify
+from common.requestSerializer import JWTAuthGuard
 
 
+@extend_schema(request=RegisterSerializer,
+               responses={201: None},
+               tags=['User'])
 @api_view(['POST'])
 @responsify
 def register(request: Request):
@@ -16,6 +22,9 @@ def register(request: Request):
     return auth.create()
 
 
+@extend_schema(request=LoginSerializer,
+               responses={200: LoginResponseSerializer},
+               tags=['User'])
 @api_view(['POST'])
 @responsify
 def login(request: Request):
@@ -25,6 +34,10 @@ def login(request: Request):
     return auth.login()
 
 
+@extend_schema(parameters=[JWTAuthGuard()],
+               request=UpdateSerializer,
+               responses={200: UserResponseSerializer},
+               tags=['User'])
 @api_view(['PATCH'])
 @responsify
 def update(request: Request):
@@ -35,6 +48,9 @@ def update(request: Request):
     return auth.update()
 
 
+@extend_schema(request=GenerateNewVerificationTokenSerializer,
+               responses={200: None},
+               tags=['User'])
 @api_view(['GET'])
 @responsify
 def generateNewVerificationToken(request: Request):
@@ -45,6 +61,9 @@ def generateNewVerificationToken(request: Request):
     return auth.generateNewVerificationToken()
 
 
+@extend_schema(request=GenerateNewPasswordResetTokenSerializer,
+               responses={200: None},
+               tags=['User'])
 @api_view(['GET'])
 @responsify
 def generateNewPasswordResetToken(request: Request):
@@ -55,6 +74,9 @@ def generateNewPasswordResetToken(request: Request):
     return auth.genreateNewPasswordResetToken()
 
 
+@extend_schema(request=ResetPasswordSerializer,
+               responses={200: None},
+               tags=['User'])
 @api_view(['POST'])
 @responsify
 def resetPassword(request: Request):
@@ -65,7 +87,10 @@ def resetPassword(request: Request):
     return auth.resetPassword()
 
 
-@api_view(['GET'])
+@extend_schema(request=VerifyAccountSerializer,
+               responses={200: None},
+               tags=['User'])
+@api_view(['POST'])
 @responsify
 def verifyAccount(request: Request):
     serilizer = VerifyAccountSerializer(data=request.data)
