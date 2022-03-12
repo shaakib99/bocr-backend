@@ -5,10 +5,10 @@ from recognition.yolov5.detect import run as classifier
 
 
 class RecognitionSerializer(serializers.Serializer):
+    id = serializers.IntegerField(required=False)
     uri = serializers.URLField(max_length=200, required=False)
     result = serializers.JSONField(required=False)
     cAt = serializers.FloatField(required=False)
-    uAt = serializers.FloatField(required=False)
 
 
 class RecognizerSerializer(serializers.Serializer):

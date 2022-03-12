@@ -13,6 +13,7 @@ from uploads.models import Uploads
 from drf_spectacular.utils import extend_schema
 from recognition.serializers.paramsSerializer import RecognitionParamsSerializer, RecognitionImageUploadSerializer
 from helper.common.requestSerializer import JWTAuthGuard
+from uauth.models import User
 from rest_framework import serializers
 import requests
 import base64
@@ -31,8 +32,8 @@ import base64
     responses={200: serializers.ListSerializer(child=RecognitionSerializer())},
     tags=['Recognition'])
 @api_view(["GET", "PUT"])
-@responsify
 @jwtAuthGuardExcept
+@responsify
 def recognition(request: Request, user=None):
     if request.method.lower() == 'put':
         finalResult = []
@@ -54,17 +55,13 @@ def recognition(request: Request, user=None):
                 result = RecognizerSerializer(data={"uri": url}).getResult()
                 result['cAt'] = datetime.now().timestamp()
 
-                recognitionModel = RecognitionModel.objects.filter(uri=url)
-                if recognitionModel:
-                    recognitionModel.update(**result)
-                else:
-                    recognitionModel = RecognitionModel.objects.create(
-                        **result)
-                    recognitionModel.save()
+                recognitionModel = RecognitionModel.objects.filter(uri=url).first()
+
+                recognitionModel.update_or_create(**result)
 
                 if user:
                     userUploadModel = Uploads.objects.create(
-                        uid=user['id'], recid=recognitionModel.id)
+                        uid=User.objects.filter(id = user['id']).first(), recid=recognitionModel)
                     userUploadModel.save()
 
                 finalResult.append(result)
