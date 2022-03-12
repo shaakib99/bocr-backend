@@ -8,27 +8,28 @@ from .models import Recognition as RecognitionModel
 from .serializers.recognitionSerializer import RecognizerSerializer, RecognitionSerializer
 from rest_framework.status import HTTP_503_SERVICE_UNAVAILABLE
 from rest_framework.exceptions import NotFound
-from common.decorators import responsify, jwtAuthGuardExcept
-from userUploads.models import UserUploads as UserUploadModel
+from helper.common.decorators import responsify, jwtAuthGuardExcept
+from uploads.models import Uploads
 from drf_spectacular.utils import extend_schema
-from recognition.serializers.paramsSerializer import ParamsSerializer
-from common.requestSerializer import JWTAuthGuard
+from recognition.serializers.paramsSerializer import RecognitionParamsSerializer, RecognitionImageUploadSerializer
+from helper.common.requestSerializer import JWTAuthGuard
 from rest_framework import serializers
 import requests
 import base64
 
 
+@extend_schema(parameters=[RecognitionParamsSerializer],
+               methods=['GET'],
+               responses={200: RecognitionSerializer},
+               tags=['Recognition'])
 @extend_schema(
     parameters=[
         JWTAuthGuard(required=False),
     ],
+    request=serializers.ListSerializer(child = RecognitionImageUploadSerializer()),
     methods=['PUT'],
     responses={200: serializers.ListSerializer(child=RecognitionSerializer())},
     tags=['Recognition'])
-@extend_schema(parameters=[ParamsSerializer],
-               methods=['GET'],
-               responses={200: RecognitionSerializer},
-               tags=['Recognition'])
 @api_view(["GET", "PUT"])
 @responsify
 @jwtAuthGuardExcept
@@ -62,7 +63,7 @@ def recognition(request: Request, user=None):
                     recognitionModel.save()
 
                 if user:
-                    userUploadModel = UserUploadModel.objects.create(
+                    userUploadModel = Uploads.objects.create(
                         uid=user['id'], recid=recognitionModel.id)
                     userUploadModel.save()
 

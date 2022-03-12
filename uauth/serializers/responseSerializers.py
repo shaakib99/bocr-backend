@@ -3,7 +3,7 @@ from uauth.models import User
 
 
 class LoginResponseSerializer(serializers.ModelSerializer):
-    token = serializers.CharField(max_length=80)
+    token = serializers.CharField(max_length=200)
 
     class Meta:
         model = User

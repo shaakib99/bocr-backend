@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'uauth',
     'recognition',
-    'userUploads',
+    'uploads',
     'rest_framework',
     'drf_spectacular',
 ]

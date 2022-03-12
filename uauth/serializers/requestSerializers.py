@@ -12,28 +12,22 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ['name', 'email', 'password']
 
 
-class LoginSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = ['email', 'password']
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=False)
+    password = serializers.CharField(max_length=32, required=False)
 
 
-class UpdateSerializer(serializers.ModelSerializer):
+class UpdateSerializer(serializers.Serializer):
     name = serializers.CharField(
         max_length=30,
         validators=[MinLengthValidator(2),
-                    RegexValidator("^[a-zA-Z ]")],
+                    RegexValidator("^([a-zA-Z]+\s)*[a-zA-Z]+$")],
         required=False)
     email = serializers.EmailField(required=False)
     password = serializers.RegexField(
         '^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{6,32}$',
         required=False)
     isActive = serializers.BooleanField(required=False)
-
-    class Meta:
-        model = User
-        fields = ['name', 'email', 'password', 'isActive']
 
 
 class GenerateNewVerificationTokenSerializer(serializers.ModelSerializer):
@@ -62,5 +56,3 @@ class VerifyAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['verifyToken']
-
-

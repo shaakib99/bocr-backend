@@ -2,7 +2,7 @@ from django.urls import path
 from .views import register, login, update, generateNewVerificationToken, generateNewPasswordResetToken, resetPassword, verifyAccount
 
 urlpatterns = [
-    path('register', view=register, name='registration'),
+    path('register', view=register, name='register'),
     path('login', view=login, name='login'),
     path('update', view=update, name='update'),
     path('generate-verification-token/<str:verifyToken>',

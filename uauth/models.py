@@ -10,7 +10,7 @@ class User(models.Model):
     name = models.CharField(
         max_length=30,
         validators=[MinLengthValidator(2),
-                    RegexValidator("^[a-zA-Z ]")])
+                    RegexValidator("^([a-zA-Z]+\s)*[a-zA-Z]+$")])
     email = models.EmailField(unique=True, null=False)
     password = models.CharField(validators=[MinLengthValidator(6)],
                                 max_length=32,

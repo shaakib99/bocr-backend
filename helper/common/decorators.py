@@ -19,7 +19,7 @@ def responsify(func):
 
         except Exception as e:
             status_code = HTTP_400_BAD_REQUEST
-            detail = 'undefined'
+            detail = e.__repr__()
             if hasattr(e, 'status_code'):
                 status_code = e.status_code
             if hasattr(e, 'detail'):
@@ -50,7 +50,6 @@ def jwtAuthGuard(func):
 def jwtAuthGuardExcept(func):
 
     def __inner(*args):
-        print('hello')
         request: Request = args[0]
         if 'Authorization' in request.headers:
             token = request.headers['Authorization']

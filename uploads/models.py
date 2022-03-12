@@ -3,7 +3,7 @@ from uauth.models import User
 from recognition.models import Recognition
 
 
-class UserUploads(models.Model):
+class Uploads(models.Model):
     id = models.AutoField(primary_key=True,
                           unique=True,
                           null=False,

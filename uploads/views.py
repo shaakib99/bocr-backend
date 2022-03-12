@@ -1,10 +1,10 @@
 from urllib.request import Request
 from rest_framework.decorators import api_view
-from common.decorators import jwtAuthGuard
-from .models import UserUploads as UserUploadModel
-from userUploads.serializers.userUploadsSerializer import UserImagesSerializer
+from helper.common.decorators import jwtAuthGuard
+from .models import Uploads as UserUploadModel
+from uploads.serializers.uploadsSerializer import UserImagesSerializer
 from drf_spectacular.utils import extend_schema
-from common.requestSerializer import JWTAuthGuard
+from helper.common.requestSerializer import JWTAuthGuard
 from rest_framework import serializers
 
 

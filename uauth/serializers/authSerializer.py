@@ -1,3 +1,4 @@
+from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from rest_framework import serializers
 from django.core.validators import MinLengthValidator, RegexValidator
 from helper.util import randomStringGenerator, hashPassword, jwtEncode
@@ -11,8 +12,10 @@ class AuthSerializer(serializers.Serializer):
     id = serializers.IntegerField(required=False)
     name = serializers.CharField(
         max_length=30,
-        validators=[MinLengthValidator(2),
-                    RegexValidator("^[a-zA-Z ]")],
+        validators=[
+            MinLengthValidator(2),
+            RegexValidator("^([a-zA-Z]+\s)*[a-zA-Z]+$")
+        ],
         required=False)
     email = serializers.EmailField(required=False)
     password = serializers.CharField(max_length=32, required=False)
@@ -32,14 +35,16 @@ class AuthSerializer(serializers.Serializer):
         self.password = hashPassword(self.initial_data['password'])
         self.passwordResetToken = randomStringGenerator(20)
         self.verifyToken = randomStringGenerator(20)
+        self.verifyTokenExpireAt = (datetime.now() +
+                                    timedelta(minutes=30)).timestamp()
         self.isActive = False
         self.isVerified = False
         self.cAt = datetime.now().timestamp()
         self.uAt = self.cAt
         self.isDeleted = False
-
         user = User.objects.create(**self.to_representation(self))
-        return user.save()
+        user.save()
+        return {'status_code': HTTP_201_CREATED}
 
     def login(self):
         email = self.initial_data['email']
@@ -55,12 +60,11 @@ class AuthSerializer(serializers.Serializer):
         user.save()
 
         result = {'email': email, 'id': user.id}
-        result = {**result, "token": jwtEncode(result)}
 
-        serializedResult = LoginResponseSerializer(data=result)
-        serializedResult.is_valid()
+        user.token = jwtEncode(result)
+        serializedResult = LoginResponseSerializer(user)
 
-        return serializedResult.validated_data
+        return serializedResult.data
 
     def update(self, id: str):
         if 'password' in self.initial_data:
@@ -68,8 +72,10 @@ class AuthSerializer(serializers.Serializer):
 
         update = {**self.initial_data, **self.to_representation(self)}
 
-        user = User.objects.filter(
-            id=id).update(**update, uAt=datetime.now().timestamp())
+        User.objects.filter(id=id).update(**update,
+                                          uAt=datetime.now().timestamp())
+
+        user = User.objects.filter(id=id).first()
 
         return UserResponseSerializer(user).data
 

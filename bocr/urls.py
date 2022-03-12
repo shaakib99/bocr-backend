@@ -25,5 +25,5 @@ urlpatterns = [
     path('api/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path(f'api/{API_VER}/auth/', include('uauth.urls')),
     path(f'api/{API_VER}/image/', include('recognition.urls')),
-    path(f'api/{API_VER}/user/', include('userUploads.urls'))
+    path(f'api/{API_VER}/user/', include('uploads.urls'))
 ]

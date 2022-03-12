@@ -2,11 +2,12 @@ from urllib.request import Request
 from rest_framework.decorators import api_view
 from drf_spectacular.utils import extend_schema
 
+
 from uauth.serializers.requestSerializers import RegisterSerializer, LoginSerializer, UpdateSerializer, GenerateNewVerificationTokenSerializer, GenerateNewPasswordResetTokenSerializer, ResetPasswordSerializer, VerifyAccountSerializer
 from uauth.serializers.responseSerializers import LoginResponseSerializer, UserResponseSerializer
 from uauth.serializers.authSerializer import AuthSerializer
-from common.decorators import responsify
-from common.requestSerializer import JWTAuthGuard
+from helper.common.decorators import responsify, jwtAuthGuard
+from helper.common.requestSerializer import JWTAuthGuard
 
 
 @extend_schema(request=RegisterSerializer,
@@ -30,7 +31,8 @@ def register(request: Request):
 def login(request: Request):
     serilizer = LoginSerializer(data=request.data)
     serilizer.is_valid(raise_exception=True)
-    auth = AuthSerializer(data=serilizer.validated_data)
+
+    auth = AuthSerializer(data=serilizer.data)
     return auth.login()
 
 
@@ -39,13 +41,14 @@ def login(request: Request):
                responses={200: UserResponseSerializer},
                tags=['User'])
 @api_view(['PATCH'])
+@jwtAuthGuard
 @responsify
-def update(request: Request):
+def update(request: Request, user):
     serilizer = UpdateSerializer(data=request.data)
     serilizer.is_valid(raise_exception=True)
 
     auth = AuthSerializer(data=serilizer.validated_data)
-    return auth.update()
+    return auth.update(user['id'])
 
 
 @extend_schema(request=GenerateNewVerificationTokenSerializer,
