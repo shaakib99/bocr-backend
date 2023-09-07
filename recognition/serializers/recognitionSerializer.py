@@ -150,6 +150,8 @@ class RecognizerSerializer(serializers.Serializer):
         for index1, box1 in enumerate(classifiedResult):
             isOverlapping = False
             for index2, box2 in enumerate(classifiedResult):
+                if box1[0] in self.__left or box1[0] in self.__right or box1[0] in self.__top or box1[0] in self.__bottom: continue
+                if box2[0] in self.__left or box2[0] in self.__right or box2[0] in self.__top or box2[0] in self.__bottom: continue
                 if index1 != index2:
                     overlapRatio = self.__overlapRatioWithBox1(box1, box2)
                     if overlapRatio > self.overlapThreshold:
